@@ -1,0 +1,17 @@
+{
+  "name": "tube-title-tester",
+  "version": "1.0.0",
+  "description": "Tube Title Tester recreation and enhancement",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx -y http-server -p 3010"
+  },
+  "keywords": [
+    "youtube",
+    "title",
+    "tester",
+    "preview"
+  ],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Tube Title Tester - Prueba y compara cómo se verán tus títulos y miniaturas de YouTube antes de publicarlos. Evita que tus títulos sean truncados."
+    />
+    <title>Tube Title Tester - Previsualizador de Títulos y Miniaturas</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script>
+      (function () {
+        const theme = localStorage.getItem("global_theme") || "dark";
+        document.documentElement.setAttribute("data-theme", theme);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <a href="/" class="btn-back-home" title="Volver al Inicio">
+            <svg
+              viewBox="0 0 24 24"
+              style="
+                width: 16px;
+                height: 16px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 2.5;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+              "
+            >
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </a>
+          <div class="brand-logo">
+            <span>T...</span>
+          </div>
+          <h1 class="brand-name">Tube Title Tester</h1>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button
+            class="nav-item"
+            id="nav-instructions"
+            aria-label="Ver Instrucciones"
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24">
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+              />
+            </svg>
+            <span>Instrucciones</span>
+          </button>
+          <button
+            class="nav-item"
+            id="nav-updates"
+            aria-label="Ver Actualizaciones"
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24">
+              <path
+                d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-1 9h-4v-2h4v2zm0-4h-4V7h4v2zM5 7h6v6H5V7zm14 10H5v-2h14v2z"
+              />
+            </svg>
+            <span>Actualizaciones</span>
+          </button>
+          <button
+            class="nav-item"
+            id="nav-feedback"
+            aria-label="Enviar Comentarios"
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24">
+              <path
+                d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"
+              />
+            </svg>
+            <span>Enviar Comentarios</span>
+          </button>
+          <button
+            class="nav-item"
+            id="nav-about"
+            aria-label="Sobre el Proyecto"
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24">
+              <path
+                d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"
+              />
+            </svg>
+            <span>Acerca de</span>
+          </button>
+          <button
+            class="nav-item"
+            id="nav-roadmap"
+            aria-label="Ver Mapa de Ruta"
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24">
+              <path
+                d="M12 2L2 22h20L12 2zm0 3.99L19.53 19H4.47L12 5.99zM13 16h-2v2h2v-2zm0-6h-2v4h2v-4z"
+              />
+            </svg>
+            <span>Mapa de Ruta</span>
+          </button>
+          <button
+            class="nav-item"
+            id="nav-donate"
+            aria-label="Hacer una Donación"
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24">
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              />
+            </svg>
+            <span>Donar</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <p>&copy; 2026</p>
+          <p class="sidebar-credits">Uso personal</p>
+        </div>
+      </aside>
+
+      <!-- Main Workspace Area -->
+      <main class="main-content">
+        <!-- Header bar -->
+        <header class="header">
+          <!-- Add title form -->
+          <div class="title-form-container">
+            <form id="add-title-form" class="title-form">
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  id="title-input"
+                  maxlength="100"
+                  placeholder="Introduce el título de tu vídeo..."
+                  autocomplete="off"
+                  aria-label="Título del vídeo a agregar"
+                />
+                <span class="char-counter" id="char-counter">0/100</span>
+              </div>
+              <button type="submit" class="btn-primary" id="add-title-btn">
+                <span>Agregar Título</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Theme switch and Toolbar controls -->
+          <div class="header-controls">
+            <button
+              class="btn-icon theme-toggle"
+              id="theme-toggle"
+              aria-label="Cambiar tema de color"
+            >
+              <!-- Sun Icon -->
+              <svg class="sun-icon" viewBox="0 0 24 24">
+                <path
+                  d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-12.37c-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.38.39-1.02 0-1.41zm-12.37 12.37c-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.38-.38.38-1.02 0-1.41z"
+                />
+              </svg>
+              <!-- Moon Icon -->
+              <svg class="moon-icon" viewBox="0 0 24 24">
+                <path
+                  d="M12.3 22h-.1c-5.5 0-10-4.5-10-10 0-4.8 3.5-9 8.3-9.9.5-.1.9.3.8.8-.4 1.9.1 3.9 1.3 5.5 1.2 1.6 3.1 2.6 5.1 2.6.4 0 .9-.1 1.3-.2.5-.1.9.3.7.8-1.2 3.8-4.7 6.4-8.8 6.4zM9.1 4.7C5.9 5.8 3.7 8.7 3.7 12c0 4.6 3.7 8.3 8.3 8.3 2.7 0 5.2-1.3 6.7-3.5-2.2.4-4.5-.3-6.2-1.9-1.8-1.7-2.7-4.2-2.3-6.7-.4 0-.8.1-1.1.5z"
+                />
+              </svg>
+            </button>
+            <button
+              class="btn-icon mobile-menu-btn"
+              id="mobile-menu-btn"
+              aria-label="Abrir menú de navegación"
+            >
+              <svg viewBox="0 0 24 24">
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <!-- Toolbar section -->
+        <section class="toolbar">
+          <div class="toolbar-left">
+            <span class="toolbar-label">Visualización:</span>
+            <div class="view-selectors">
+              <button
+                class="btn-tab active"
+                id="view-feed"
+                aria-label="Vista de feed de inicio"
+              >
+                <svg class="tab-icon" viewBox="0 0 24 24">
+                  <path
+                    d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"
+                  />
+                </svg>
+                <span>Inicio (Home Feed)</span>
+              </button>
+              <button
+                class="btn-tab"
+                id="view-sidebar"
+                aria-label="Vista de columna lateral"
+              >
+                <svg class="tab-icon" viewBox="0 0 24 24">
+                  <path d="M4 18h17v-6H4v6zM4 5v6h17V5H4z" />
+                </svg>
+                <span>Recomendados (Sidebar)</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="toolbar-right">
+            <!-- Global Thumbnail Upload -->
+            <div class="global-upload-zone">
+              <label
+                for="global-image-upload"
+                class="btn-secondary"
+                id="global-upload-label"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"
+                  />
+                </svg>
+                <span>Establecer Miniatura Global</span>
+              </label>
+              <input
+                type="file"
+                id="global-image-upload"
+                accept="image/*"
+                style="display: none"
+              />
+            </div>
+            <button class="btn-danger" id="clear-all-btn">Limpiar Todo</button>
+          </div>
+        </section>
+
+        <!-- Cards Container -->
+        <section class="workspace-area">
+          <div class="cards-grid view-home" id="cards-grid">
+            <!-- Cards will be populated dynamically from app.js -->
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div class="modal-overlay" id="modal-instructions">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>¿Cómo usar Tube Title Tester?</h2>
+          <button class="modal-close" aria-label="Cerrar modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <ol class="instructions-list">
+            <li>
+              <strong>Agrega variaciones de títulos:</strong>
+              Escribe tus ideas en la barra de texto superior y haz clic en
+              <em>"Agregar Título"</em>. Puedes agregar hasta 100 caracteres por
+              título.
+            </li>
+            <li>
+              <strong>Establece tu miniatura:</strong>
+              Coloca el cursor sobre la miniatura de cualquier tarjeta y haz
+              clic en <em>"Subir Miniatura"</em>, o simplemente arrastra y
+              suelta un archivo de imagen encima. Puedes subir una diferente por
+              tarjeta o usar el botón <em>"Miniatura Global"</em> para aplicar
+              una sola a todas tus variaciones.
+            </li>
+            <li>
+              <strong>Simula las vistas de YouTube:</strong>
+              Cambia entre la vista de <strong>Inicio (Home Feed)</strong> y la
+              vista de <strong>Recomendados (Sidebar)</strong> en la barra de
+              herramientas para ver cómo se trunca el título en cada sección.
+            </li>
+            <li>
+              <strong>Edita todo en tiempo real:</strong>
+              Haz clic en el título, el nombre del canal, las vistas o la fecha
+              directamente dentro de cualquier tarjeta para editarlos de manera
+              interactiva.
+            </li>
+            <li>
+              <strong>Personaliza el avatar:</strong>
+              Haz clic en el círculo del canal a la izquierda para subir una
+              foto de perfil personalizada para tu canal.
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal-overlay" id="modal-about">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Acerca de Tube Title Tester</h2>
+          <button class="modal-close" aria-label="Cerrar modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>
+            <strong>Tube Title Tester</strong> es una recreación premium
+            diseñada para ayudar a los creadores de contenido de YouTube a
+            previsualizar y optimizar la apariencia de sus títulos y miniaturas
+            antes de publicarlos.
+          </p>
+          <p>
+            El título y la miniatura son los dos factores más importantes para
+            el CTR (Click-Through Rate) de tus vídeos. Esta herramienta te
+            permite:
+          </p>
+          <ul>
+            <li>
+              Evitar el corte de texto molesto (truncación) que ocurre cuando
+              tus títulos exceden el espacio visible.
+            </li>
+            <li>
+              Probar combinaciones de colores de miniatura frente a diferentes
+              títulos side-by-side.
+            </li>
+            <li>
+              Simular la experiencia de los espectadores tanto en temas claros
+              como oscuros.
+            </li>
+          </ul>
+          <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.8">
+            Esta aplicación se ejecuta localmente de forma privada. Las imágenes
+            y textos introducidos no se suben a ningún servidor.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Send Feedback Modal -->
+    <div class="modal-overlay" id="modal-feedback">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Enviar Comentarios</h2>
+          <button class="modal-close" aria-label="Cerrar modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Tu opinión nos ayuda a mejorar esta herramienta. Si tienes
+            sugerencias, problemas o nuevas ideas, no dudes en escribirnos.
+          </p>
+          <form
+            id="feedback-form"
+            class="modal-form"
+            onsubmit="
+              event.preventDefault();
+              alert('¡Gracias por tus comentarios! Nos ayudan a mejorar.');
+              this.reset();
+              document
+                .querySelector('#modal-feedback')
+                .classList.remove('active');
+            "
+          >
+            <div class="form-group">
+              <label for="feedback-email">Correo electrónico (opcional):</label>
+              <input
+                type="email"
+                id="feedback-email"
+                placeholder="tu@email.com"
+              />
+            </div>
+            <div class="form-group">
+              <label for="feedback-message">Tu mensaje:</label>
+              <textarea
+                id="feedback-message"
+                rows="4"
+                required
+                placeholder="Escribe aquí tus sugerencias..."
+              ></textarea>
+            </div>
+            <button type="submit" class="btn-primary">Enviar Mensaje</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Updates Modal -->
+    <div class="modal-overlay" id="modal-updates">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Actualizaciones recientes</h2>
+          <button class="modal-close" aria-label="Cerrar modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="changelog">
+            <div class="changelog-item">
+              <span class="changelog-date">Mayo 2026</span>
+              <h4>Versión 2.0.0 (Lanzamiento Premium)</h4>
+              <ul>
+                <li>
+                  Se añade soporte completo para subir imágenes personalizadas a
+                  cada miniatura.
+                </li>
+                <li>
+                  Función de "Miniatura Global" para propagar una imagen a todos
+                  los placeholders a la vez.
+                </li>
+                <li>
+                  Vistas de simulación mejoradas: modo Home Feed e inicio y
+                  columna lateral de recomendados.
+                </li>
+                <li>
+                  Edición inline completa y directa de metadatos (vistas, fecha,
+                  canal).
+                </li>
+                <li>
+                  Soporte de arrastrar y soltar (drag and drop) de imágenes.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Road Map Modal -->
+    <div class="modal-overlay" id="modal-roadmap">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Mapa de Ruta (Roadmap)</h2>
+          <button class="modal-close" aria-label="Cerrar modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Próximas características planificadas para las siguientes versiones:
+          </p>
+          <ul class="roadmap-list">
+            <li>
+              <span class="badge badge-soon">Próximamente</span>
+              <strong>Simulación en Móvil:</strong> Formato vertical para probar
+              la visibilidad en la aplicación de YouTube para móviles.
+            </li>
+            <li>
+              <span class="badge badge-soon">Próximamente</span>
+              <strong>Analizador de legibilidad:</strong> Calificación
+              automática de contraste y tamaño de fuente en las miniaturas para
+              pantallas de menor tamaño.
+            </li>
+            <li>
+              <span class="badge badge-soon">Próximamente</span>
+              <strong>Historial de ideas:</strong> Un archivo local para poder
+              guardar y cargar múltiples borradores e ideas de proyectos
+              diferentes.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donate Modal -->
+    <div class="modal-overlay" id="modal-donate">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Apoyar el Proyecto</h2>
+          <button class="modal-close" aria-label="Cerrar modal">&times;</button>
+        </div>
+        <div class="modal-body text-center" style="text-align: center">
+          <svg
+            viewBox="0 0 24 24"
+            style="width: 60px; fill: var(--yt-red); margin: 10px auto"
+          >
+            <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            />
+          </svg>
+          <h3>¡Gracias por considerar apoyarnos!</h3>
+          <p style="margin: 15px 0">
+            Tube Title Tester es una herramienta gratuita y de código abierto.
+            Tu apoyo nos ayuda a cubrir los costos de mantenimiento y a seguir
+            implementando nuevas funciones.
+          </p>
+          <div
+            class="donation-options"
+            style="
+              display: flex;
+              gap: 10px;
+              justify-content: center;
+              margin: 20px 0;
+            "
+          >
+            <button
+              class="btn-primary"
+              onclick="
+                alert(
+                  '¡Gracias! Este es un enlace de donación de demostración.',
+                )
+              "
+            >
+              $5 USD
+            </button>
+            <button
+              class="btn-primary"
+              onclick="
+                alert(
+                  '¡Gracias! Este es un enlace de donación de demostración.',
+                )
+              "
+            >
+              $10 USD
+            </button>
+            <button
+              class="btn-primary"
+              onclick="
+                alert(
+                  '¡Gracias! Este es un enlace de donación de demostración.',
+                )
+              "
+            >
+              $20 USD
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
