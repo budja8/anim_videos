@@ -1,5 +1,9 @@
 import { animateText } from './animations.js';
 import { AnimationRecorder } from './recorder.js';
+import { formatTextCase, hexToRgba, loadGoogleFont } from './utils.js';
+import { DEFAULT_PRESETS } from './presets.js';
+import { PresetManager } from './preset-manager.js';
+import { CanvasManager } from './canvas-manager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -102,249 +106,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // App State
     let currentTimeline = null;
     let isPausedByUser = false;
-    let visualScale = 1;
     const recorder = new AnimationRecorder(animationContainer, animatedText);
-    const loadedFonts = new Set(['Outfit']);
 
-    // Default Presets Data
-    const DEFAULT_PRESETS = {
-        "Neón Synthwave": {
-            "text-type": "static",
-            "input-text": "SYNTHWAVE",
-            "font-family": "Bebas Neue",
-            "font-size": "120",
-            "font-weight": "800",
-            "text-scale": "1.2",
-            "color-type": "gradient",
-            "gradient-color-1": "#ff007f",
-            "gradient-color-2": "#00ffff",
-            "gradient-angle": "45",
-            "stroke-color": "#000000",
-            "stroke-width": "3",
-            "enable-shadow": "false",
-            "enable-neon": "true",
-            "neon-color": "#ff007f",
-            "neon-blur": "30",
-            "stagger-mode": "char",
-            "stagger-speed": "0.08",
-            "anim-preset": "blur-reveal",
-            "anim-duration": "1.2",
-            "anim-delay": "0.2",
-            "anim-ease": "power4.out",
-            "loop-preset": "float",
-            "loop-cycle-duration": "2.0",
-            "loop-intensity": "1.5",
-            "hold-duration": "4",
-            "outro-preset": "fade",
-            "outro-duration": "0.8",
-            "outro-ease": "power2.in"
-        },
-        "Gamer Impacto": {
-            "text-type": "static",
-            "input-text": "VICTORIA!",
-            "font-family": "Lilita One",
-            "font-size": "130",
-            "font-weight": "800",
-            "text-scale": "1.3",
-            "color-type": "solid",
-            "text-color": "#ffea00",
-            "stroke-color": "#000000",
-            "stroke-width": "6",
-            "enable-shadow": "true",
-            "shadow-color": "#000000",
-            "shadow-blur": "0",
-            "shadow-angle": "90",
-            "shadow-distance": "12",
-            "shadow-opacity": "80",
-            "enable-neon": "false",
-            "stagger-mode": "char",
-            "stagger-speed": "0.04",
-            "anim-preset": "elastic-bounce",
-            "anim-duration": "1.8",
-            "anim-delay": "0.1",
-            "anim-ease": "back.out(1.7)",
-            "loop-preset": "pulse",
-            "loop-cycle-duration": "1.0",
-            "loop-intensity": "1.2",
-            "hold-duration": "3",
-            "outro-preset": "slide-down",
-            "outro-duration": "0.6",
-            "outro-ease": "power2.in"
-        },
-        "Minimalista Elegante": {
-            "text-type": "static",
-            "input-text": "El Arte del Minimalismo",
-            "font-family": "Playfair Display",
-            "font-size": "70",
-            "font-weight": "400",
-            "text-scale": "1.0",
-            "color-type": "solid",
-            "text-color": "#ffffff",
-            "stroke-color": "#000000",
-            "stroke-width": "0",
-            "enable-shadow": "true",
-            "shadow-color": "#000000",
-            "shadow-blur": "15",
-            "shadow-angle": "45",
-            "shadow-distance": "3",
-            "shadow-opacity": "30",
-            "enable-neon": "false",
-            "stagger-mode": "word",
-            "stagger-speed": "0.15",
-            "anim-preset": "fade",
-            "anim-duration": "2.0",
-            "anim-delay": "0.5",
-            "anim-ease": "power2.out",
-            "loop-preset": "none",
-            "hold-duration": "5",
-            "outro-preset": "fade",
-            "outro-duration": "1.2",
-            "outro-ease": "none"
-        }
-    };
-
-    // ==========================================================================
-    // UI LAYOUT & CANVAS SCALING
-    // ==========================================================================
-
-    function getResolution() {
-        const val = canvasResolution.value || "2560x1440";
-        const [w, h] = val.split('x').map(Number);
-        return { width: w || 2560, height: h || 1440 };
-    }
-
-    function scaleCanvas() {
-        const { width, height } = getResolution();
-        
-        // Update unscaled dimension styles
-        animationContainer.style.width = `${width}px`;
-        animationContainer.style.height = `${height}px`;
-        
-        // Calculate fit scale factor (leaving margin inside viewport)
-        const viewportWidth = viewport.clientWidth - 80;
-        const viewportHeight = viewport.clientHeight - 80;
-        
-        const scaleX = viewportWidth / width;
-        const scaleY = viewportHeight / height;
-        visualScale = Math.min(scaleX, scaleY, 1); // Max scale of 1
-        
-        // Apply transform scale
-        animationContainer.style.transform = `scale(${visualScale})`;
-        
-        // Update Safe Zones overlay sizes
-        safeZones.style.width = `${width}px`;
-        safeZones.style.height = `${height}px`;
-        safeZones.style.transform = `scale(${visualScale})`;
-        
-        // Update resolution badge
-        document.getElementById('canvas-resolution-badge').textContent = `${width} x ${height}`;
-    }
-
-    // Handle viewport resize events
-    const resizeObserver = new ResizeObserver(() => scaleCanvas());
-    resizeObserver.observe(viewport);
-
-    // ==========================================================================
-    // GOOGLE FONTS DYNAMIC LOADER
-    // ==========================================================================
-
-    // ==========================================================================
-    // UTILITY HELPERS FOR TEXT STYLING
-    // ==========================================================================
-
-    function formatTextCase(text, caseType) {
-        if (!text) return "";
-        switch (caseType) {
-            case 'uppercase':
-                return text.toUpperCase();
-            case 'lowercase':
-                return text.toLowerCase();
-            case 'titlecase': // Camel Case with spaces
-                return text.split(/\s+/).map(word => {
-                    if (!word) return '';
-                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-                }).join(' ');
-            case 'camelcase': // CamelCase without spaces
-                return text.split(/\s+/).map(word => {
-                    if (!word) return '';
-                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-                }).join('');
-            default:
-                return text;
-        }
-    }
-
-    function hexToRgba(hex, alpha) {
-        const cleanHex = hex.replace('#', '');
-        let r, g, b;
-        if (cleanHex.length === 3) {
-            r = parseInt(cleanHex.charAt(0) + cleanHex.charAt(0), 16);
-            g = parseInt(cleanHex.charAt(1) + cleanHex.charAt(1), 16);
-            b = parseInt(cleanHex.charAt(2) + cleanHex.charAt(2), 16);
-        } else if (cleanHex.length === 6) {
-            r = parseInt(cleanHex.substring(0, 2), 16);
-            g = parseInt(cleanHex.substring(2, 4), 16);
-            b = parseInt(cleanHex.substring(4, 6), 16);
-        } else {
-            return hex;
-        }
-        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    }
-
-    // ==========================================================================
-    // GOOGLE FONTS DYNAMIC LOADER
-    // ==========================================================================
-
-    function loadGoogleFont(fontName, callback) {
-        const trimmedName = fontName.trim();
-        if (!trimmedName || loadedFonts.has(trimmedName)) {
-            if (callback) callback();
-            return;
-        }
-        
-        const fontUrlName = trimmedName.replace(/\s+/g, '+');
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        
-        // Single weight presets
-        const singleWeightFonts = ['Anton', 'Lilita One', 'Luckiest Guy', 'Bangers'];
-        if (singleWeightFonts.includes(trimmedName)) {
-            link.href = `https://fonts.googleapis.com/css2?family=${fontUrlName}&display=swap`;
-        } else {
-            link.href = `https://fonts.googleapis.com/css2?family=${fontUrlName}:wght@300;400;600;800&display=swap`;
-        }
-        
-        link.onload = () => {
-            loadedFonts.add(trimmedName);
-            console.log(`Font loaded successfully: ${trimmedName}`);
-            
-            document.fonts.ready.then(() => {
-                if (callback) callback();
-            });
-        };
-        
-        link.onerror = () => {
-            // Fallback for custom search fonts or single-weight fonts
-            const fallbackLink = document.createElement('link');
-            fallbackLink.rel = 'stylesheet';
-            fallbackLink.href = `https://fonts.googleapis.com/css2?family=${fontUrlName}&display=swap`;
-            
-            fallbackLink.onload = () => {
-                loadedFonts.add(trimmedName);
-                document.fonts.ready.then(() => {
-                    if (callback) callback();
-                });
-            };
-            
-            fallbackLink.onerror = () => {
-                alert(`No se pudo encontrar o cargar la fuente "${trimmedName}" de Google Fonts. Asegúrate de que el nombre esté bien escrito.`);
-            };
-            
-            document.head.appendChild(fallbackLink);
-        };
-        
-        document.head.appendChild(link);
-    }
+    // Initialize Canvas Manager
+    const canvasManager = new CanvasManager({
+        viewport: viewport,
+        animationContainer: animationContainer,
+        safeZones: safeZones,
+        canvasResolution: canvasResolution,
+        resolutionBadge: document.getElementById('canvas-resolution-badge')
+    });
 
     // ==========================================================================
     // STYLING & ANIMATION APPLICATION
@@ -482,6 +253,46 @@ document.addEventListener('DOMContentLoaded', () => {
         applyStylesAndPlay(shouldPlay);
     }
 
+    // Initialize Preset Manager
+    const presetManager = new PresetManager({
+        presetSelect: presetSelect,
+        btnSavePreset: btnSavePreset,
+        btnDeletePreset: btnDeletePreset,
+        elementsToSave: [
+            'text-type', 'input-text', 'counter-start', 'counter-end', 
+            'counter-prefix', 'counter-suffix', 'counter-pop-effect',
+            'font-family', 'custom-font-name', 'text-case', 'font-size', 
+            'font-weight', 'text-scale', 'color-type', 'text-color', 
+            'stroke-color', 'stroke-width', 'gradient-color-1', 
+            'gradient-color-2', 'gradient-angle', 'enable-shadow', 
+            'shadow-color', 'shadow-blur', 'shadow-angle', 'shadow-distance', 
+            'shadow-opacity', 'enable-neon', 'neon-color', 'neon-blur',
+            'stagger-mode', 'stagger-speed', 'anim-preset', 'anim-duration', 
+            'anim-delay', 'anim-ease', 'loop-preset', 'loop-cycle-duration', 
+            'loop-intensity', 'hold-duration', 'outro-preset', 
+            'outro-duration', 'outro-ease', 'bg-type', 'custom-bg-color', 
+            'canvas-resolution'
+        ],
+        onLoadPreset: () => {
+            // Handle custom show/hide UI sections manually based on new settings
+            const isCounter = textType.value === 'counter';
+            staticTextFields.classList.toggle('hidden', isCounter);
+            counterTextFields.classList.toggle('hidden', !isCounter);
+
+            shadowControls.classList.toggle('hidden', !enableShadow.checked);
+            neonControls.classList.toggle('hidden', !enableNeon.checked);
+
+            const colorTypeVal = colorType.value;
+            solidColorContainer.classList.toggle('hidden', colorTypeVal === 'gradient');
+            gradientColorContainer.classList.toggle('hidden', colorTypeVal !== 'gradient');
+
+            loopControls.classList.toggle('hidden', loopPreset.value === 'none');
+            outroControls.classList.toggle('hidden', outroPreset.value === 'none');
+            
+            triggerUpdate();
+        }
+    });
+
     // ==========================================================================
     // EVENT LISTENERS & INTERACTION
     // ==========================================================================
@@ -583,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
             customBgContainer.classList.remove('hidden');
             animationContainer.style.backgroundColor = customBgColor.value;
         }
-        scaleCanvas(); // Trigger rescale
+        canvasManager.scaleCanvas(); // Trigger rescale
     });
 
     customBgColor.addEventListener('input', () => {
@@ -640,174 +451,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Resolution changes
     canvasResolution.addEventListener('change', () => {
-        scaleCanvas();
+        canvasManager.scaleCanvas();
         triggerUpdate();
-    });
-
-    // Preset loading helper
-    function loadPresetData(presetData) {
-        for (const [id, value] of Object.entries(presetData)) {
-            const el = document.getElementById(id);
-            if (!el) continue;
-            
-            if (el.type === 'checkbox') {
-                el.checked = value === 'true';
-            } else {
-                el.value = value;
-            }
-            // Dispatch input and change events to sync UI and sliders
-            el.dispatchEvent(new Event('input'));
-            el.dispatchEvent(new Event('change'));
-        }
-        
-        // Handle custom show/hide UI sections manually based on new settings
-        const isCounter = textType.value === 'counter';
-        staticTextFields.classList.toggle('hidden', isCounter);
-        counterTextFields.classList.toggle('hidden', !isCounter);
-
-        shadowControls.classList.toggle('hidden', !enableShadow.checked);
-        neonControls.classList.toggle('hidden', !enableNeon.checked);
-
-        const colorTypeVal = colorType.value;
-        solidColorContainer.classList.toggle('hidden', colorTypeVal === 'gradient');
-        gradientColorContainer.classList.toggle('hidden', colorTypeVal !== 'gradient');
-
-        loopControls.classList.toggle('hidden', loopPreset.value === 'none');
-        outroControls.classList.toggle('hidden', outroPreset.value === 'none');
-        
-        triggerUpdate();
-    }
-
-    // Presets Management
-    const PRESETS_STORAGE_KEY = 'chroma_studio_presets';
-    let customPresets = {};
-
-    function initPresets() {
-        try {
-            const stored = localStorage.getItem(PRESETS_STORAGE_KEY);
-            if (stored) {
-                customPresets = JSON.parse(stored);
-            }
-        } catch (e) {
-            console.error('Error loading presets from localStorage:', e);
-        }
-        renderPresetSelect();
-    }
-
-    function renderPresetSelect() {
-        presetSelect.innerHTML = '<option value="">-- Selecciona un Preset --</option>';
-        
-        const factoryGroup = document.createElement('optgroup');
-        factoryGroup.label = 'Predeterminados de Fábrica';
-        for (const name of Object.keys(DEFAULT_PRESETS)) {
-            const opt = document.createElement('option');
-            opt.value = 'factory:' + name;
-            opt.textContent = name;
-            factoryGroup.appendChild(opt);
-        }
-        presetSelect.appendChild(factoryGroup);
-        
-        if (Object.keys(customPresets).length > 0) {
-            const userGroup = document.createElement('optgroup');
-            userGroup.label = 'Mis Presets';
-            for (const name of Object.keys(customPresets)) {
-                const opt = document.createElement('option');
-                opt.value = 'user:' + name;
-                opt.textContent = name;
-                userGroup.appendChild(opt);
-            }
-            presetSelect.appendChild(userGroup);
-        }
-    }
-
-    presetSelect.addEventListener('change', () => {
-        const val = presetSelect.value;
-        if (!val) return;
-        
-        let presetData = null;
-        if (val.startsWith('factory:')) {
-            const name = val.substring(8);
-            presetData = DEFAULT_PRESETS[name];
-        } else if (val.startsWith('user:')) {
-            const name = val.substring(5);
-            presetData = customPresets[name];
-        }
-        
-        if (presetData) {
-            loadPresetData(presetData);
-        }
-    });
-
-    btnSavePreset.addEventListener('click', () => {
-        const name = prompt('Escribe el nombre de tu nuevo preset:');
-        if (!name) return;
-        
-        const cleanName = name.trim();
-        if (!cleanName) return;
-        
-        const presetData = {};
-        const elementsToSave = [
-            'text-type', 'input-text', 'counter-start', 'counter-end', 
-            'counter-prefix', 'counter-suffix', 'counter-pop-effect',
-            'font-family', 'custom-font-name', 'text-case', 'font-size', 
-            'font-weight', 'text-scale', 'color-type', 'text-color', 
-            'stroke-color', 'stroke-width', 'gradient-color-1', 
-            'gradient-color-2', 'gradient-angle', 'enable-shadow', 
-            'shadow-color', 'shadow-blur', 'shadow-angle', 'shadow-distance', 
-            'shadow-opacity', 'enable-neon', 'neon-color', 'neon-blur',
-            'stagger-mode', 'stagger-speed', 'anim-preset', 'anim-duration', 
-            'anim-delay', 'anim-ease', 'loop-preset', 'loop-cycle-duration', 
-            'loop-intensity', 'hold-duration', 'outro-preset', 
-            'outro-duration', 'outro-ease', 'bg-type', 'custom-bg-color', 
-            'canvas-resolution'
-        ];
-        
-        elementsToSave.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                if (el.type === 'checkbox') {
-                    presetData[id] = el.checked ? 'true' : 'false';
-                } else {
-                    presetData[id] = el.value;
-                }
-            }
-        });
-        
-        customPresets[cleanName] = presetData;
-        
-        try {
-            localStorage.setItem(PRESETS_STORAGE_KEY, JSON.stringify(customPresets));
-            alert(`Preset "${cleanName}" guardado correctamente.`);
-            renderPresetSelect();
-            presetSelect.value = 'user:' + cleanName;
-        } catch (e) {
-            alert('Error al guardar el preset: LocalStorage lleno o deshabilitado.');
-        }
-    });
-
-    btnDeletePreset.addEventListener('click', () => {
-        const val = presetSelect.value;
-        if (!val) {
-            alert('Por favor selecciona un preset de la lista para eliminarlo.');
-            return;
-        }
-        
-        if (val.startsWith('factory:')) {
-            alert('No se pueden eliminar los presets predeterminados de fábrica.');
-            return;
-        }
-        
-        const name = val.substring(5);
-        if (confirm(`¿Estás seguro de que deseas eliminar el preset "${name}"?`)) {
-            delete customPresets[name];
-            try {
-                localStorage.setItem(PRESETS_STORAGE_KEY, JSON.stringify(customPresets));
-                alert(`Preset "${name}" eliminado.`);
-                renderPresetSelect();
-            } catch (e) {
-                console.error(e);
-            }
-        }
     });
 
     // Inline triggers for styled elements (to react instantly to sliders/pickers)
@@ -871,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
             animationContainer.requestFullscreen().catch(err => {
                 alert(`Error al activar pantalla completa: ${err.message}`);
                 animationContainer.classList.remove('fullscreen-canvas');
-                scaleCanvas();
+                canvasManager.scaleCanvas();
             });
         } else {
             document.exitFullscreen();
@@ -882,7 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement) {
             animationContainer.classList.remove('fullscreen-canvas');
-            scaleCanvas();
+            canvasManager.scaleCanvas();
             triggerUpdate();
         }
     });
@@ -911,7 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
         recordingProgress.style.width = '0%';
         recordingStatus.textContent = 'Inicializando el renderizador...';
 
-        const { width, height } = getResolution();
+        const { width, height } = canvasManager.getResolution();
         const exportConfig = {
             width: width,
             height: height,
@@ -993,10 +638,9 @@ document.addEventListener('DOMContentLoaded', () => {
     linkSliderAndNumber('anim-delay-slider', 'anim-delay');
 
     // Initial load trigger
-    scaleCanvas();
-    initPresets();
+    canvasManager.scaleCanvas();
     setTimeout(() => {
         // Load default preset on startup
-        loadPresetData(DEFAULT_PRESETS["Neón Synthwave"]);
+        presetManager.loadPresetData(DEFAULT_PRESETS["Neón Synthwave"]);
     }, 300);
 });
