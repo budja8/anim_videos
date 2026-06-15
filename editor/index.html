@@ -1,583 +1,576 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Creador de Animaciones de Texto Chroma</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Fuente por defecto elegante para la UI -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css" />
-    <!-- Iconos Lucide (para botones elegantes) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-      (function () {
-        const theme = localStorage.getItem("global_theme") || "dark";
-        document.documentElement.setAttribute("data-theme", theme);
-      })();
-    </script>
-  </head>
-  <body>
-    <div class="app-container">
-      <!-- Panel de Control Lateral -->
-      <aside class="sidebar">
-        <div class="sidebar-scroll">
-          <!-- Sección de Texto -->
-          <section class="control-section">
-            <h3 class="section-title">
-              <i data-lucide="type"></i> Contenido y Texto
-            </h3>
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creador de Animaciones de Texto Chroma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Fuente por defecto elegante para la UI -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Iconos Lucide (para botones elegantes) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    (function () {
+      const theme = localStorage.getItem("global_theme") || "dark";
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Panel de Control Lateral -->
+    <aside class="sidebar">
+      <div class="sidebar-scroll">
+        <!-- Sección de Presets Guardados -->
+        <section class="control-section">
+          <h3 class="section-title">
+            <i data-lucide="save"></i> Presets Guardados
+          </h3>
+          <div class="input-group">
+            <label for="preset-select">Cargar Preset</label>
+            <select id="preset-select">
+              <option value="">-- Selecciona un Preset --</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <button id="btn-save-preset" class="btn-primary"
+              style="flex: 1; padding: 8px 12px; font-size: 12px; height: 36px;">
+              <i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i> Guardar Actual
+            </button>
+            <button id="btn-delete-preset" class="btn-secondary"
+              style="padding: 8px 12px; font-size: 12px; height: 36px;">
+              <i data-lucide="trash" style="width: 14px; height: 14px;"></i> Eliminar
+            </button>
+          </div>
+        </section>
+        <!-- Sección de Texto -->
+        <section class="control-section">
+          <h3 class="section-title">
+            <i data-lucide="type"></i> Contenido y Texto
+          </h3>
+
+          <div class="input-group">
+            <label for="text-type">Tipo de Contenido</label>
+            <select id="text-type">
+              <option value="static">Texto Estático / Frase</option>
+              <option value="counter">Contador / Cronómetro (Números)</option>
+            </select>
+          </div>
+
+          <!-- Campos de texto estático -->
+          <div id="static-text-fields" class="sub-fields">
             <div class="input-group">
-              <label for="text-type">Tipo de Contenido</label>
-              <select id="text-type">
-                <option value="static">Texto Estático / Frase</option>
-                <option value="counter">Contador / Cronómetro (Números)</option>
+              <label for="input-text">Texto a Animar</label>
+              <textarea id="input-text" rows="2" placeholder="Escribe tu texto aquí...">
+Texto Animado</textarea>
+            </div>
+          </div>
+
+          <!-- Campos de contador -->
+          <div id="counter-text-fields" class="sub-fields hidden">
+            <div class="field-row">
+              <div class="input-group">
+                <label for="counter-start">Inicio</label>
+                <input type="number" id="counter-start" value="1" />
+              </div>
+              <div class="input-group">
+                <label for="counter-end">Fin</label>
+                <input type="number" id="counter-end" value="6" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="input-group">
+                <label for="counter-prefix">Prefijo</label>
+                <input type="text" id="counter-prefix" placeholder="Ej: Hace " value="" />
+              </div>
+              <div class="input-group">
+                <label for="counter-suffix">Sufijo</label>
+                <input type="text" id="counter-suffix" placeholder="Ej: meses" value="" />
+              </div>
+            </div>
+            <div class="input-group">
+              <label class="checkbox-container">
+                <input type="checkbox" id="counter-pop-effect" checked />
+                <span class="checkmark"></span>
+                Efecto de rebote por número
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sección de Tipografía y Estilo -->
+        <section class="control-section">
+          <h3 class="section-title">
+            <i data-lucide="palette"></i> Estilo del Texto
+          </h3>
+
+          <div class="input-group">
+            <label for="font-family">Tipografía</label>
+            <div class="font-select-wrapper">
+              <select id="font-family">
+                <option value="Outfit">Outfit</option>
+                <option value="Montserrat">Montserrat</option>
+                <option value="Playfair Display">Playfair Display</option>
+                <option value="Bebas Neue">Bebas Neue (Impactante)</option>
+                <option value="Fredoka">Fredoka (Redondeada/Rebote)</option>
+                <option value="Space Grotesk">Space Grotesk (Moderna)</option>
+                <option value="Anton">Anton (Video Impactante)</option>
+                <option value="Poppins">Poppins (Limpia y Moderna)</option>
+                <option value="Lilita One">Lilita One (Estilo Gaming)</option>
+                <option value="Luckiest Guy">
+                  Luckiest Guy (Pop/Cartoon)
+                </option>
+                <option value="Oswald">Oswald (Condensada Fuerte)</option>
+                <option value="custom">Buscar en Google Fonts...</option>
               </select>
             </div>
+          </div>
 
-            <!-- Campos de texto estático -->
-            <div id="static-text-fields" class="sub-fields">
-              <div class="input-group">
-                <label for="input-text">Texto a Animar</label>
-                <textarea
-                  id="input-text"
-                  rows="2"
-                  placeholder="Escribe tu texto aquí..."
-                >
-Texto Animado</textarea
-                >
-              </div>
+          <!-- Input para cargar fuente personalizada de Google Fonts -->
+          <div id="custom-font-input-container" class="input-group hidden">
+            <label for="custom-font-name">Nombre de Google Font</label>
+            <div class="input-with-btn">
+              <input type="text" id="custom-font-name" placeholder="Ej: Poppins, Inter, Lobster..." />
+              <button id="btn-load-font" type="button" class="btn-secondary">
+                Cargar
+              </button>
             </div>
+            <span class="input-hint">Escribe el nombre exacto de la fuente de Google Fonts.</span>
+          </div>
 
-            <!-- Campos de contador -->
-            <div id="counter-text-fields" class="sub-fields hidden">
-              <div class="field-row">
-                <div class="input-group">
-                  <label for="counter-start">Inicio</label>
-                  <input type="number" id="counter-start" value="1" />
-                </div>
-                <div class="input-group">
-                  <label for="counter-end">Fin</label>
-                  <input type="number" id="counter-end" value="6" />
-                </div>
-              </div>
-              <div class="field-row">
-                <div class="input-group">
-                  <label for="counter-prefix">Prefijo</label>
-                  <input
-                    type="text"
-                    id="counter-prefix"
-                    placeholder="Ej: Hace "
-                    value=""
-                  />
-                </div>
-                <div class="input-group">
-                  <label for="counter-suffix">Sufijo</label>
-                  <input
-                    type="text"
-                    id="counter-suffix"
-                    placeholder="Ej: meses"
-                    value=" meses"
-                  />
-                </div>
-              </div>
-              <div class="input-group">
-                <label class="checkbox-container">
-                  <input type="checkbox" id="counter-pop-effect" checked />
-                  <span class="checkmark"></span>
-                  Efecto de rebote por número
-                </label>
-              </div>
+          <!-- Cargar archivo de fuente local -->
+          <div class="input-group font-upload-group">
+            <label for="upload-font" class="file-upload-label">
+              <i data-lucide="upload-cloud"></i> Subir Fuente Propia (.ttf,
+              .otf, .woff)
+            </label>
+            <input type="file" id="upload-font" accept=".ttf,.otf,.woff,.woff2" class="hidden-file-input" />
+            <div id="uploaded-font-status" class="input-hint hidden"></div>
+          </div>
+
+          <div class="input-group">
+            <label for="text-case">Formato de Texto</label>
+            <select id="text-case">
+              <option value="none">Normal (Sin cambios)</option>
+              <option value="uppercase">TODO MAYÚSCULAS</option>
+              <option value="titlecase">
+                Capitalizar Palabras (Camel Case)
+              </option>
+              <option value="camelcase">CamelCase (Sin Espacios)</option>
+              <option value="lowercase">todo minúsculas</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="font-size">Tamaño (px)</label>
+            <div class="slider-number-input">
+              <input type="range" id="font-size-slider" min="20" max="300" step="1" value="80" />
+              <input type="number" id="font-size" value="80" min="20" max="300" />
             </div>
-          </section>
+          </div>
 
-          <!-- Sección de Tipografía y Estilo -->
-          <section class="control-section">
-            <h3 class="section-title">
-              <i data-lucide="palette"></i> Estilo del Texto
-            </h3>
+          <div class="input-group">
+            <label for="font-weight">Grosor</label>
+            <select id="font-weight">
+              <option value="300">Fino</option>
+              <option value="400" selected>Normal</option>
+              <option value="600">Semi-Negrita</option>
+              <option value="800">Extra-Negrita</option>
+            </select>
+          </div>
 
+          <div class="input-group">
+            <label for="text-scale">Escala del Texto (Multiplicador)</label>
+            <input type="range" id="text-scale" min="0.5" max="3" step="0.05" value="1" />
+            <div class="range-value" id="text-scale-value">1.0x</div>
+          </div>
+
+          <div class="input-group">
+            <label for="color-type">Tipo de Color de Texto</label>
+            <select id="color-type">
+              <option value="solid" selected>Color Sólido</option>
+              <option value="gradient">Degradado</option>
+            </select>
+          </div>
+
+          <div id="solid-color-container" class="field-row">
             <div class="input-group">
-              <label for="font-family">Tipografía</label>
-              <div class="font-select-wrapper">
-                <select id="font-family">
-                  <option value="Outfit">Outfit</option>
-                  <option value="Montserrat">Montserrat</option>
-                  <option value="Playfair Display">Playfair Display</option>
-                  <option value="Bebas Neue">Bebas Neue (Impactante)</option>
-                  <option value="Fredoka">Fredoka (Redondeada/Rebote)</option>
-                  <option value="Space Grotesk">Space Grotesk (Moderna)</option>
-                  <option value="Anton">Anton (Video Impactante)</option>
-                  <option value="Poppins">Poppins (Limpia y Moderna)</option>
-                  <option value="Lilita One">Lilita One (Estilo Gaming)</option>
-                  <option value="Luckiest Guy">
-                    Luckiest Guy (Pop/Cartoon)
-                  </option>
-                  <option value="Oswald">Oswald (Condensada Fuerte)</option>
-                  <option value="custom">Buscar en Google Fonts...</option>
+              <label for="text-color">Color Texto</label>
+              <div class="color-picker-wrapper">
+                <input type="color" id="text-color" value="#ffffff" />
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="stroke-color">Borde Texto</label>
+              <div class="color-picker-wrapper">
+                <input type="color" id="stroke-color" value="#000000" />
+              </div>
+            </div>
+          </div>
+
+          <div id="gradient-color-container" class="sub-fields hidden">
+            <div class="field-row">
+              <div class="input-group">
+                <label for="gradient-color-1">Color Inicial</label>
+                <div class="color-picker-wrapper">
+                  <input type="color" id="gradient-color-1" value="#ff007f" />
+                </div>
+              </div>
+              <div class="input-group">
+                <label for="gradient-color-2">Color Final</label>
+                <div class="color-picker-wrapper">
+                  <input type="color" id="gradient-color-2" value="#7f00ff" />
+                </div>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="gradient-angle">Ángulo del Degradado (°)</label>
+              <div class="slider-number-input">
+                <input type="range" id="gradient-angle-slider" min="0" max="360" step="1" value="90" />
+                <input type="number" id="gradient-angle" value="90" min="0" max="360" />
+              </div>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="stroke-width">Grosor Borde</label>
+            <div class="slider-number-input">
+              <input type="range" id="stroke-width-slider" min="0" max="20" step="0.5" value="2" />
+              <input type="number" id="stroke-width" value="2" min="0" max="20" step="0.5" />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="checkbox-container">
+              <input type="checkbox" id="enable-shadow" checked />
+              <span class="checkmark"></span>
+              Sombra de texto
+            </label>
+            <div id="shadow-controls" class="sub-fields">
+              <div class="input-group">
+                <label for="shadow-color">Color Sombra</label>
+                <div class="color-picker-wrapper">
+                  <input type="color" id="shadow-color" value="#000000" />
+                </div>
+              </div>
+              <div class="input-group">
+                <label for="shadow-blur">Difuminado</label>
+                <div class="slider-number-input">
+                  <input type="range" id="shadow-blur-slider" min="0" max="50" step="1" value="10" />
+                  <input type="number" id="shadow-blur" value="10" min="0" max="50" />
+                </div>
+              </div>
+              <div class="input-group">
+                <label for="shadow-angle">Dirección Sombra (Ángulo °)</label>
+                <div class="slider-number-input">
+                  <input type="range" id="shadow-angle-slider" min="0" max="360" step="1" value="45" />
+                  <input type="number" id="shadow-angle" value="45" min="0" max="360" />
+                </div>
+              </div>
+              <div class="input-group">
+                <label for="shadow-distance">Distancia Sombra (px)</label>
+                <div class="slider-number-input">
+                  <input type="range" id="shadow-distance-slider" min="0" max="100" step="1" value="6" />
+                  <input type="number" id="shadow-distance" value="6" min="0" max="100" />
+                </div>
+              </div>
+              <div class="input-group">
+                <label for="shadow-opacity">Opacidad Sombra (%)</label>
+                <div class="slider-number-input">
+                  <input type="range" id="shadow-opacity-slider" min="0" max="100" step="1" value="50" />
+                  <input type="number" id="shadow-opacity" value="50" min="0" max="100" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Efecto Neón -->
+          <div class="input-group">
+            <label class="checkbox-container">
+              <input type="checkbox" id="enable-neon" />
+              <span class="checkmark"></span>
+              Efecto Neón / Resplandor
+            </label>
+            <div id="neon-controls" class="sub-fields hidden">
+              <div class="input-group">
+                <label for="neon-color">Color del Resplandor</label>
+                <div class="color-picker-wrapper">
+                  <input type="color" id="neon-color" value="#ff007f" />
+                </div>
+              </div>
+              <div class="input-group">
+                <label for="neon-blur">Intensidad / Difuminado</label>
+                <div class="slider-number-input">
+                  <input type="range" id="neon-blur-slider" min="5" max="80" step="1" value="20" />
+                  <input type="number" id="neon-blur" value="20" min="5" max="80" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sección de Animación -->
+        <section class="control-section">
+          <h3 class="section-title">
+            <i data-lucide="play-circle"></i> Ciclo de Animación (GSAP)
+          </h3>
+
+          <div class="input-group">
+            <label for="stagger-mode">Modo de Desfase</label>
+            <select id="stagger-mode">
+              <option value="char" selected>Letra a Letra</option>
+              <option value="word">Palabra por Palabra</option>
+              <option value="line">Línea por Línea</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="stagger-speed">Velocidad del Desfase (s)</label>
+            <input type="range" id="stagger-speed" min="0" max="0.5" step="0.01" value="0.05" />
+            <div class="range-value" id="stagger-value">0.05s</div>
+          </div>
+
+          <!-- Pestaña / Collapsible: Entrada -->
+          <div class="input-group">
+            <label style="font-weight: 600; color: var(--accent); margin-top: 8px;">1. Animación de Entrada
+              (Intro)</label>
+            <select id="anim-preset">
+              <option value="fade">Aparecer (Fade In)</option>
+              <option value="slide-up">Deslizar hacia Arriba</option>
+              <option value="slide-down">Deslizar hacia Abajo</option>
+              <option value="zoom-in">Zoom (Escala)</option>
+              <option value="blur-reveal" selected>Revelado Cinematográfico</option>
+              <option value="elastic-bounce">Rebote Elástico</option>
+              <option value="typewriter">Máquina de Escribir</option>
+              <option value="kinetic-wave">Onda Cinética</option>
+              <option value="none">Ninguno (Estático)</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <div class="input-group">
+              <label for="anim-duration">Duración (s)</label>
+              <input type="number" id="anim-duration" value="1.5" min="0.1" max="10" step="0.1" />
+            </div>
+            <div class="input-group">
+              <label for="anim-delay">Espera/Delay (s)</label>
+              <input type="number" id="anim-delay" value="0.2" min="0" max="5" step="0.1" />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="anim-ease">Transición (Easing)</label>
+            <select id="anim-ease">
+              <option value="power2.out">Suave al Final (Power2.out)</option>
+              <option value="power4.out">Rápido al Inicio, Lento al Final</option>
+              <option value="back.out(1.7)">Elasticidad Ligera (Back.out)</option>
+              <option value="elastic.out(1, 0.3)">Rebote Elástico Intenso</option>
+              <option value="bounce.out">Rebote Físico (Bounce)</option>
+              <option value="none">Lineal</option>
+            </select>
+          </div>
+
+          <!-- Pestaña / Collapsible: Bucle -->
+          <div class="input-group">
+            <label style="font-weight: 600; color: var(--accent); margin-top: 8px;">2. Animación de Bucle
+              (Énfasis)</label>
+            <select id="loop-preset">
+              <option value="none" selected>Ninguno</option>
+              <option value="pulse">Pulso (Escala)</option>
+              <option value="float">Flotación (Arriba/Abajo)</option>
+              <option value="glow">Brillo Pulsante</option>
+              <option value="flicker">Parpadeo de Opacidad</option>
+            </select>
+          </div>
+
+          <div id="loop-controls" class="sub-fields hidden">
+            <div class="field-row">
+              <div class="input-group">
+                <label for="loop-cycle-duration">Ciclo (s)</label>
+                <input type="number" id="loop-cycle-duration" value="1.5" min="0.2" max="5" step="0.1" />
+              </div>
+              <div class="input-group">
+                <label for="loop-intensity">Intensidad</label>
+                <input type="number" id="loop-intensity" value="1.0" min="0.1" max="5" step="0.1" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Duración del Hold -->
+          <div class="input-group">
+            <label for="hold-duration">Duración de Exposición (s)</label>
+            <div class="slider-number-input">
+              <input type="range" id="hold-duration-slider" min="1" max="15" step="0.5" value="3" />
+              <input type="number" id="hold-duration" value="3" min="1" max="15" step="0.5" />
+            </div>
+          </div>
+
+          <!-- Pestaña / Collapsible: Salida -->
+          <div class="input-group">
+            <label style="font-weight: 600; color: var(--accent); margin-top: 8px;">3. Animación de Salida
+              (Outro)</label>
+            <select id="outro-preset">
+              <option value="none" selected>Ninguno</option>
+              <option value="fade">Desvanecer (Fade Out)</option>
+              <option value="slide-up">Deslizar hacia Arriba</option>
+              <option value="slide-down">Deslizar hacia Abajo</option>
+              <option value="zoom-out">Zoom Out</option>
+            </select>
+          </div>
+
+          <div id="outro-controls" class="sub-fields hidden">
+            <div class="field-row">
+              <div class="input-group">
+                <label for="outro-duration">Duración (s)</label>
+                <input type="number" id="outro-duration" value="1.0" min="0.1" max="5" step="0.1" />
+              </div>
+              <div class="input-group">
+                <label for="outro-ease">Transición</label>
+                <select id="outro-ease">
+                  <option value="power2.in">Power2.in</option>
+                  <option value="power4.in">Power4.in</option>
+                  <option value="back.in(1.7)">Retroceso (Back.in)</option>
+                  <option value="none">Lineal</option>
                 </select>
               </div>
             </div>
+          </div>
+        </section>
 
-            <!-- Input para cargar fuente personalizada de Google Fonts -->
-            <div id="custom-font-input-container" class="input-group hidden">
-              <label for="custom-font-name">Nombre de Google Font</label>
-              <div class="input-with-btn">
-                <input
-                  type="text"
-                  id="custom-font-name"
-                  placeholder="Ej: Poppins, Inter, Lobster..."
-                />
-                <button id="btn-load-font" type="button" class="btn-secondary">
-                  Cargar
-                </button>
-              </div>
-              <span class="input-hint"
-                >Escribe el nombre exacto de la fuente de Google Fonts.</span
-              >
-            </div>
+        <!-- Configuración del Lienzo (Canvas / Chroma) -->
+        <section class="control-section">
+          <h3 class="section-title">
+            <i data-lucide="video"></i> Configuración de Fondo
+          </h3>
 
-            <!-- Cargar archivo de fuente local -->
-            <div class="input-group font-upload-group">
-              <label for="upload-font" class="file-upload-label">
-                <i data-lucide="upload-cloud"></i> Subir Fuente Propia (.ttf,
-                .otf, .woff)
-              </label>
-              <input
-                type="file"
-                id="upload-font"
-                accept=".ttf,.otf,.woff,.woff2"
-                class="hidden-file-input"
-              />
-              <div id="uploaded-font-status" class="input-hint hidden"></div>
-            </div>
-
-            <div class="input-group">
-              <label for="text-case">Formato de Texto</label>
-              <select id="text-case">
-                <option value="none">Normal (Sin cambios)</option>
-                <option value="uppercase">TODO MAYÚSCULAS</option>
-                <option value="titlecase">
-                  Capitalizar Palabras (Camel Case)
-                </option>
-                <option value="camelcase">CamelCase (Sin Espacios)</option>
-                <option value="lowercase">todo minúsculas</option>
-              </select>
-            </div>
-
-            <div class="input-group">
-              <label for="font-size">Tamaño (px)</label>
-              <div class="slider-number-input">
-                <input
-                  type="range"
-                  id="font-size-slider"
-                  min="20"
-                  max="300"
-                  step="1"
-                  value="80"
-                />
-                <input
-                  type="number"
-                  id="font-size"
-                  value="80"
-                  min="20"
-                  max="300"
-                />
-              </div>
-            </div>
-
-            <div class="input-group">
-              <label for="font-weight">Grosor</label>
-              <select id="font-weight">
-                <option value="300">Fino</option>
-                <option value="400" selected>Normal</option>
-                <option value="600">Semi-Negrita</option>
-                <option value="800">Extra-Negrita</option>
-              </select>
-            </div>
-
-            <div class="input-group">
-              <label for="text-scale">Escala del Texto (Multiplicador)</label>
-              <input
-                type="range"
-                id="text-scale"
-                min="0.5"
-                max="3"
-                step="0.05"
-                value="1"
-              />
-              <div class="range-value" id="text-scale-value">1.0x</div>
-            </div>
-
-            <div class="field-row">
-              <div class="input-group">
-                <label for="text-color">Color Texto</label>
-                <div class="color-picker-wrapper">
-                  <input type="color" id="text-color" value="#ffffff" />
-                </div>
-              </div>
-              <div class="input-group">
-                <label for="stroke-color">Borde Texto</label>
-                <div class="color-picker-wrapper">
-                  <input type="color" id="stroke-color" value="#000000" />
-                </div>
-              </div>
-            </div>
-
-            <div class="input-group">
-              <label for="stroke-width">Grosor Borde</label>
-              <div class="slider-number-input">
-                <input
-                  type="range"
-                  id="stroke-width-slider"
-                  min="0"
-                  max="20"
-                  step="0.5"
-                  value="2"
-                />
-                <input
-                  type="number"
-                  id="stroke-width"
-                  value="2"
-                  min="0"
-                  max="20"
-                  step="0.5"
-                />
-              </div>
-            </div>
-
-            <div class="input-group">
-              <label class="checkbox-container">
-                <input type="checkbox" id="enable-shadow" checked />
-                <span class="checkmark"></span>
-                Sombra de texto
-              </label>
-              <div id="shadow-controls" class="sub-fields">
-                <div class="input-group">
-                  <label for="shadow-color">Color Sombra</label>
-                  <div class="color-picker-wrapper">
-                    <input type="color" id="shadow-color" value="#000000" />
-                  </div>
-                </div>
-                <div class="input-group">
-                  <label for="shadow-blur">Difuminado</label>
-                  <div class="slider-number-input">
-                    <input
-                      type="range"
-                      id="shadow-blur-slider"
-                      min="0"
-                      max="50"
-                      step="1"
-                      value="10"
-                    />
-                    <input
-                      type="number"
-                      id="shadow-blur"
-                      value="10"
-                      min="0"
-                      max="50"
-                    />
-                  </div>
-                </div>
-                <div class="input-group">
-                  <label for="shadow-angle">Dirección Sombra (Ángulo °)</label>
-                  <div class="slider-number-input">
-                    <input
-                      type="range"
-                      id="shadow-angle-slider"
-                      min="0"
-                      max="360"
-                      step="1"
-                      value="45"
-                    />
-                    <input
-                      type="number"
-                      id="shadow-angle"
-                      value="45"
-                      min="0"
-                      max="360"
-                    />
-                  </div>
-                </div>
-                <div class="input-group">
-                  <label for="shadow-distance">Distancia Sombra (px)</label>
-                  <div class="slider-number-input">
-                    <input
-                      type="range"
-                      id="shadow-distance-slider"
-                      min="0"
-                      max="100"
-                      step="1"
-                      value="6"
-                    />
-                    <input
-                      type="number"
-                      id="shadow-distance"
-                      value="6"
-                      min="0"
-                      max="100"
-                    />
-                  </div>
-                </div>
-                <div class="input-group">
-                  <label for="shadow-opacity">Opacidad Sombra (%)</label>
-                  <div class="slider-number-input">
-                    <input
-                      type="range"
-                      id="shadow-opacity-slider"
-                      min="0"
-                      max="100"
-                      step="1"
-                      value="50"
-                    />
-                    <input
-                      type="number"
-                      id="shadow-opacity"
-                      value="50"
-                      min="0"
-                      max="100"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Sección de Animación -->
-          <section class="control-section">
-            <h3 class="section-title">
-              <i data-lucide="play-circle"></i> Animación (GSAP)
-            </h3>
-
-            <div class="input-group">
-              <label for="anim-preset">Efecto / Preset</label>
-              <select id="anim-preset">
-                <!-- Estáticos -->
-                <option value="fade">Aparecer (Fade In)</option>
-                <option value="slide-up">Deslizar hacia Arriba</option>
-                <option value="slide-down">Deslizar hacia Abajo</option>
-                <option value="zoom-in">Zoom (Escala)</option>
-                <option value="blur-reveal" selected>
-                  Revelado Cinematográfico (Desfoque)
-                </option>
-                <option value="elastic-bounce">Rebote Elástico</option>
-                <option value="typewriter">Máquina de Escribir</option>
-                <option value="kinetic-wave">
-                  Onda Cinética (Letra a Letra)
-                </option>
-              </select>
-            </div>
-
-            <div class="input-group">
-              <label for="anim-duration">Duración (s)</label>
-              <div class="slider-number-input">
-                <input
-                  type="range"
-                  id="anim-duration-slider"
-                  min="0.1"
-                  max="10"
-                  step="0.1"
-                  value="1.5"
-                />
-                <input
-                  type="number"
-                  id="anim-duration"
-                  value="1.5"
-                  min="0.1"
-                  max="10"
-                  step="0.1"
-                />
-              </div>
-            </div>
-            <div class="input-group">
-              <label for="anim-delay">Espera / Delay (s)</label>
-              <div class="slider-number-input">
-                <input
-                  type="range"
-                  id="anim-delay-slider"
-                  min="0"
-                  max="5"
-                  step="0.1"
-                  value="0.2"
-                />
-                <input
-                  type="number"
-                  id="anim-delay"
-                  value="0.2"
-                  min="0"
-                  max="5"
-                  step="0.1"
-                />
-              </div>
-            </div>
-
-            <div class="input-group">
-              <label for="anim-ease">Tipo de Transición (Easing)</label>
-              <select id="anim-ease">
-                <option value="power2.out">Suave al Final (Power2.out)</option>
-                <option value="power4.out">
-                  Rápido al Inicio, Lento al Final
-                </option>
-                <option value="back.out(1.7)">
-                  Elasticidad Ligera (Back.out)
-                </option>
-                <option value="elastic.out(1, 0.3)">
-                  Rebote Elástico Intenso
-                </option>
-                <option value="bounce.out">Rebote Físico (Bounce)</option>
-                <option value="none">Lineal / Constante</option>
-              </select>
-            </div>
-
-            <div class="input-group">
-              <label for="stagger-speed">Desfase entre letras (s)</label>
-              <input
-                type="range"
-                id="stagger-speed"
-                min="0"
-                max="0.3"
-                step="0.01"
-                value="0.05"
-              />
-              <div class="range-value" id="stagger-value">0.05s</div>
-            </div>
-          </section>
-
-          <!-- Configuración del Lienzo (Canvas / Chroma) -->
-          <section class="control-section">
-            <h3 class="section-title">
-              <i data-lucide="video"></i> Configuración de Fondo
-            </h3>
-
-            <div class="input-group">
-              <label for="bg-type">Tipo de Fondo</label>
-              <select id="bg-type">
-                <option value="chroma-green" selected>
-                  Verde Chroma (#00FF00)
-                </option>
-                <option value="chroma-blue">Azul Chroma (#0000FF)</option>
-                <option value="transparent">
-                  Transparente (Ideal para WebM)
-                </option>
-                <option value="custom">Color Personalizado</option>
-              </select>
-            </div>
-
-            <div id="custom-bg-color-container" class="input-group hidden">
-              <label for="custom-bg-color">Color de Fondo</label>
-              <div class="color-picker-wrapper">
-                <input type="color" id="custom-bg-color" value="#00ff00" />
-              </div>
-            </div>
-
-            <div class="input-group">
-              <label for="canvas-resolution">Resolución del Lienzo</label>
-              <select id="canvas-resolution">
-                <option value="2560x1440" selected>
-                  2560 x 1440 (2K Quad HD)
-                </option>
-                <option value="1920x1080">1920 x 1080 (1080p Full HD)</option>
-                <option value="3840x2160">3840 x 2160 (4K Ultra HD)</option>
-                <option value="1080x1080">1080 x 1080 (1:1 Cuadrado)</option>
-                <option value="1080x1920">
-                  1080 x 1920 (9:16 Shorts/TikTok)
-                </option>
-              </select>
-            </div>
-          </section>
-        </div>
-
-        <!-- Acciones Principales -->
-        <footer class="sidebar-footer">
-          <button id="btn-play" class="btn-primary">
-            <i data-lucide="play"></i> Reproducir
-          </button>
-          <button id="btn-record" class="btn-accent">
-            <i data-lucide="download"></i> Exportar Video (60fps)
-          </button>
-        </footer>
-      </aside>
-
-      <!-- Área Principal de Renderizado / Vista Previa -->
-      <main class="preview-area">
-        <div class="preview-header">
-          <div class="header-logo-wrapper">
-            <a href="/" class="btn-back" title="Volver al Inicio">
-              <i data-lucide="arrow-left" style="width: 18px; height: 18px"></i>
-            </a>
+          <div class="input-group">
+            <label for="bg-type">Tipo de Fondo</label>
+            <select id="bg-type">
+              <option value="chroma-green" selected>
+                Verde Chroma (#00FF00)
+              </option>
+              <option value="chroma-blue">Azul Chroma (#0000FF)</option>
+              <option value="transparent">
+                Transparente (Ideal para WebM)
+              </option>
+              <option value="custom">Color Personalizado</option>
+            </select>
           </div>
 
-          <div class="preview-title">
-            <span class="live-indicator">● VISTA PREVIA</span>
-            <span id="canvas-resolution-badge">1920 x 1080</span>
-            <span
-              id="animation-duration-badge"
-              style="
+          <div id="custom-bg-color-container" class="input-group hidden">
+            <label for="custom-bg-color">Color de Fondo</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="custom-bg-color" value="#00ff00" />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="canvas-resolution">Resolución del Lienzo</label>
+            <select id="canvas-resolution">
+              <option value="2560x1440" selected>
+                2560 x 1440 (2K Quad HD)
+              </option>
+              <option value="1920x1080">1920 x 1080 (1080p Full HD)</option>
+              <option value="3840x2160">3840 x 2160 (4K Ultra HD)</option>
+              <option value="1080x1080">1080 x 1080 (1:1 Cuadrado)</option>
+              <option value="1080x1920">
+                1080 x 1920 (9:16 Shorts/TikTok)
+              </option>
+            </select>
+          </div>
+        </section>
+      </div>
+
+      <!-- Acciones Principales -->
+      <footer class="sidebar-footer">
+        <div class="field-row" style="gap: 8px;">
+          <button id="btn-play" class="btn-primary" style="flex: 1; padding: 12px 10px; font-size: 13px;">
+            <i data-lucide="play"></i> Reproducir
+          </button>
+          <button id="btn-pause" class="btn-secondary"
+            style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 10px; font-size: 13px;">
+            <i data-lucide="pause"></i> Pausar
+          </button>
+        </div>
+        <button id="btn-record" class="btn-accent">
+          <i data-lucide="download"></i> Exportar Video (60fps)
+        </button>
+      </footer>
+    </aside>
+
+    <!-- Área Principal de Renderizado / Vista Previa -->
+    <main class="preview-area">
+      <div class="preview-header">
+        <div class="header-logo-wrapper">
+          <a href="/" class="btn-back" title="Volver al Inicio">
+            <i data-lucide="arrow-left" style="width: 18px; height: 18px"></i>
+          </a>
+        </div>
+
+        <div class="preview-title">
+          <span class="live-indicator">● VISTA PREVIA</span>
+          <span id="canvas-resolution-badge">1920 x 1080</span>
+          <span id="animation-duration-badge" style="
                 font-size: 12px;
                 color: var(--text-secondary);
                 background-color: var(--bg-tertiary);
                 padding: 4px 8px;
                 border-radius: 4px;
                 font-family: monospace;
-              "
-              >Duración: --s</span
-            >
-          </div>
-
-          <div class="preview-actions">
-            <button id="btn-theme-toggle" title="Cambiar Tema">
-              <i data-lucide="sun" class="sun-icon"></i>
-              <i data-lucide="moon" class="moon-icon"></i>
-            </button>
-            <button
-              id="btn-fullscreen"
-              title="Pantalla Completa (Ideal para OBS)"
-            >
-              <i data-lucide="maximize-2"></i>
-            </button>
-            <button id="btn-safe-zones" title="Mostrar Zonas Seguras">
-              <i data-lucide="layout-grid"></i>
-            </button>
-          </div>
+              ">Duración: --s</span>
         </div>
 
-        <!-- Contenedor del Lienzo -->
-        <div class="canvas-viewport" id="viewport">
-          <div class="safe-zone-overlay hidden" id="safe-zones">
-            <div class="safe-action"></div>
-            <div class="safe-title"></div>
-          </div>
+        <div class="preview-actions">
+          <button id="btn-theme-toggle" title="Cambiar Tema">
+            <i data-lucide="sun" class="sun-icon"></i>
+            <i data-lucide="moon" class="moon-icon"></i>
+          </button>
+          <button id="btn-fullscreen" title="Pantalla Completa (Ideal para OBS)">
+            <i data-lucide="maximize-2"></i>
+          </button>
+          <button id="btn-safe-zones" title="Mostrar Zonas Seguras">
+            <i data-lucide="layout-grid"></i>
+          </button>
+        </div>
+      </div>
 
-          <!-- El contenedor de animación en HTML (permite textos con fuentes de Google de manera ultra fluida y nítida) -->
-          <div id="animation-container" class="chroma-green">
-            <div id="animated-text-wrapper">
-              <h1 id="animated-text">Texto Animado</h1>
-            </div>
-          </div>
+      <!-- Contenedor del Lienzo -->
+      <div class="canvas-viewport" id="viewport">
+        <div class="safe-zone-overlay hidden" id="safe-zones">
+          <div class="safe-action"></div>
+          <div class="safe-title"></div>
         </div>
 
-        <!-- Estado de la grabación -->
-        <div id="recording-overlay" class="recording-overlay hidden">
-          <div class="loader"></div>
-          <p id="recording-status">
-            Renderizando y grabando animación a 60fps...
-          </p>
-          <div class="progress-bar-container">
-            <div id="recording-progress" class="progress-bar"></div>
+        <!-- El contenedor de animación en HTML (permite textos con fuentes de Google de manera ultra fluida y nítida) -->
+        <div id="animation-container" class="chroma-green">
+          <div id="animated-text-wrapper">
+            <h1 id="animated-text">Texto Animado</h1>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
 
-    <!-- Scripts de Dependencia: GSAP Core -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+      <!-- Estado de la grabación -->
+      <div id="recording-overlay" class="recording-overlay hidden">
+        <div class="loader"></div>
+        <p id="recording-status">
+          Renderizando y grabando animación a 60fps...
+        </p>
+        <div class="progress-bar-container">
+          <div id="recording-progress" class="progress-bar"></div>
+        </div>
+      </div>
+    </main>
+  </div>
 
-    <!-- Archivos de la Aplicación (módulo ES principal) -->
-    <script type="module" src="app.js"></script>
-  </body>
+  <!-- Scripts de Dependencia: GSAP Core -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <!-- Archivos de la Aplicación (módulo ES principal) -->
+  <script type="module" src="app.js"></script>
+</body>
+
 </html>

@@ -61,7 +61,6 @@ export function animateText(element, config) {
     // Reset only animated element styles to preserve manual font/color/shadow/stroke styles
     gsap.set(element, { clearProps: "opacity,x,y,scale,scaleX,scaleY,rotation,transform,filter" });
 
-    
     const tl = gsap.timeline({
         onStart: config.onStart || null,
         onUpdate: config.onUpdate || null,
@@ -79,90 +78,65 @@ export function animateText(element, config) {
     element.textContent = config.text || "Texto Animado";
     splitTextIntoSpans(element);
     
-    const chars = element.querySelectorAll('.char-span');
-    if (chars.length === 0) return tl;
+    // Select targets based on staggerMode
+    let targets;
+    if (config.staggerMode === 'word') {
+        targets = element.querySelectorAll('.word-span');
+    } else if (config.staggerMode === 'line') {
+        targets = element.querySelectorAll('.line-container');
+    } else {
+        targets = element.querySelectorAll('.char-span');
+    }
+    
+    if (targets.length === 0) return tl;
     
     const duration = Number(config.duration) || 1.0;
     const delay = Number(config.delay) || 0;
     const ease = config.ease || "power2.out";
     const stagger = Number(config.stagger) || 0.05;
     
-    // 3. Apply animations based on selected preset
+    // --- STAGE 1: INTRO ---
+    let introTween = null;
     switch (config.preset) {
         case 'fade':
-            tl.fromTo(chars, 
-                { opacity: 0 },
-                { opacity: 1, duration: duration, ease: ease, stagger: stagger },
-                delay
-            );
+            introTween = gsap.fromTo(targets, { opacity: 0 }, { opacity: 1, duration: duration, ease: ease, stagger: stagger });
             break;
             
         case 'slide-up':
-            tl.fromTo(chars, 
-                { opacity: 0, y: 50 },
-                { opacity: 1, y: 0, duration: duration, ease: ease, stagger: stagger },
-                delay
-            );
+            introTween = gsap.fromTo(targets, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: duration, ease: ease, stagger: stagger });
             break;
             
         case 'slide-down':
-            tl.fromTo(chars, 
-                { opacity: 0, y: -50 },
-                { opacity: 1, y: 0, duration: duration, ease: ease, stagger: stagger },
-                delay
-            );
+            introTween = gsap.fromTo(targets, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: duration, ease: ease, stagger: stagger });
             break;
             
         case 'zoom-in':
-            tl.fromTo(chars, 
-                { opacity: 0, scale: 0, transformOrigin: "center center" },
-                { opacity: 1, scale: 1, duration: duration, ease: ease, stagger: stagger },
-                delay
-            );
+            introTween = gsap.fromTo(targets, { opacity: 0, scale: 0, transformOrigin: "center center" }, { opacity: 1, scale: 1, duration: duration, ease: ease, stagger: stagger });
             break;
             
         case 'blur-reveal':
-            tl.fromTo(chars, 
-                { opacity: 0, filter: "blur(15px)", y: 15 },
-                { opacity: 1, filter: "blur(0px)", y: 0, duration: duration, ease: ease, stagger: stagger },
-                delay
-            );
+            introTween = gsap.fromTo(targets, { opacity: 0, filter: "blur(15px)", y: 15 }, { opacity: 1, filter: "blur(0px)", y: 0, duration: duration, ease: ease, stagger: stagger });
             break;
             
         case 'elastic-bounce':
-            tl.fromTo(chars, 
-                { opacity: 0, y: 80, scaleY: 1.8 },
-                { opacity: 1, y: 0, scaleY: 1, duration: duration, ease: ease, stagger: stagger },
-                delay
-            );
+            introTween = gsap.fromTo(targets, { opacity: 0, y: 80, scaleY: 1.8 }, { opacity: 1, y: 0, scaleY: 1, duration: duration, ease: ease, stagger: stagger });
             break;
             
         case 'typewriter':
-            // Fast toggle from invisible to visible
-            tl.fromTo(chars, 
-                { opacity: 0 },
-                { 
-                    opacity: 1, 
-                    duration: 0.01, 
-                    ease: "none", 
-                    stagger: {
-                        each: duration / chars.length,
-                    }
-                },
-                delay
-            );
+            introTween = gsap.fromTo(targets, { opacity: 0 }, { 
+                opacity: 1, 
+                duration: 0.01, 
+                ease: "none", 
+                stagger: {
+                    each: duration / targets.length,
+                }
+            });
             break;
             
         case 'kinetic-wave':
-            // Slide up, then settle back down in wave format
-            tl.fromTo(chars,
-                { opacity: 0, y: 30 },
-                { opacity: 1, y: 0, duration: duration * 0.4, ease: "power1.out", stagger: stagger },
-                delay
-            );
-            
-            // Continuous wave hover effect if configured for looping, or just an extra bounce
-            tl.to(chars, {
+            introTween = gsap.timeline();
+            introTween.fromTo(targets, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: duration * 0.4, ease: "power1.out", stagger: stagger });
+            introTween.to(targets, {
                 y: -15,
                 duration: 0.25,
                 ease: "power1.inOut",
@@ -173,16 +147,115 @@ export function animateText(element, config) {
                 },
                 repeat: 1,
                 yoyo: true
-            }, delay + 0.3);
+            }, 0.3);
+            break;
+            
+        case 'none':
+            introTween = gsap.fromTo(targets, { opacity: 1 }, { opacity: 1, duration: 0.01 });
             break;
             
         default:
-            // Default Fade
-            tl.fromTo(chars, 
-                { opacity: 0 },
-                { opacity: 1, duration: duration, ease: ease, stagger: stagger },
-                delay
-            );
+            introTween = gsap.fromTo(targets, { opacity: 0 }, { opacity: 1, duration: duration, ease: ease, stagger: stagger });
+    }
+    
+    tl.add(introTween, delay);
+    
+    // Calculate end of Intro animation
+    const introEndTime = delay + tl.duration();
+    const holdDuration = Number(config.holdDuration) || 3.0;
+    
+    // --- STAGE 2: LOOP / EMPHASIS ---
+    if (config.loopPreset && config.loopPreset !== 'none') {
+        const loopCycle = Number(config.loopCycleDuration) || 1.5;
+        const intensity = Number(config.loopIntensity) || 1.0;
+        const repeats = Math.max(1, Math.round(holdDuration / loopCycle));
+        
+        switch (config.loopPreset) {
+            case 'pulse':
+                tl.to(targets, {
+                    scale: 1 + (0.15 * intensity),
+                    duration: loopCycle / 2,
+                    yoyo: true,
+                    repeat: repeats * 2 - 1,
+                    ease: "power1.inOut",
+                    stagger: stagger
+                }, introEndTime);
+                break;
+            case 'float':
+                tl.to(targets, {
+                    y: -15 * intensity,
+                    duration: loopCycle / 2,
+                    yoyo: true,
+                    repeat: repeats * 2 - 1,
+                    ease: "power1.inOut",
+                    stagger: stagger
+                }, introEndTime);
+                break;
+            case 'glow':
+                tl.to(targets, {
+                    filter: `brightness(${1 + 0.35 * intensity})`,
+                    duration: loopCycle / 2,
+                    yoyo: true,
+                    repeat: repeats * 2 - 1,
+                    ease: "power1.inOut",
+                    stagger: stagger
+                }, introEndTime);
+                break;
+            case 'flicker':
+                tl.to(targets, {
+                    opacity: 0.4 + (0.3 * (1 - Math.min(1, intensity/5))),
+                    duration: 0.1,
+                    yoyo: true,
+                    repeat: Math.round(holdDuration / 0.2),
+                    ease: "steps(1)"
+                }, introEndTime);
+                break;
+        }
+    }
+    
+    // --- STAGE 3: OUTRO ---
+    const outroStartTime = introEndTime + holdDuration;
+    if (config.outroPreset && config.outroPreset !== 'none') {
+        const outroDuration = Number(config.outroDuration) || 1.0;
+        const outroEase = config.outroEase || "power2.in";
+        
+        switch (config.outroPreset) {
+            case 'fade':
+                tl.to(targets, {
+                    opacity: 0,
+                    duration: outroDuration,
+                    ease: outroEase,
+                    stagger: stagger
+                }, outroStartTime);
+                break;
+            case 'slide-up':
+                tl.to(targets, {
+                    opacity: 0,
+                    y: -60,
+                    duration: outroDuration,
+                    ease: outroEase,
+                    stagger: stagger
+                }, outroStartTime);
+                break;
+            case 'slide-down':
+                tl.to(targets, {
+                    opacity: 0,
+                    y: 60,
+                    duration: outroDuration,
+                    ease: outroEase,
+                    stagger: stagger
+                }, outroStartTime);
+                break;
+            case 'zoom-out':
+                tl.to(targets, {
+                    opacity: 0,
+                    scale: 0,
+                    duration: outroDuration,
+                    ease: outroEase,
+                    stagger: stagger
+                }, outroStartTime);
+                break;
+        }
     }
     
     return tl;

@@ -831,3 +831,25 @@ button {
   transform: none !important;
   box-shadow: none !important;
 }
+
+/* Custom Styles for Gradients and Neon Glow in HTML preview */
+#animated-text.has-gradient,
+#animated-text.has-gradient .char-span,
+#animated-text.has-gradient .word-span,
+#animated-text.has-gradient .line-container {
+  background: linear-gradient(var(--gradient-angle-deg, 90deg), var(--gradient-color-1, #ff007f), var(--gradient-color-2, #7f00ff));
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+#animated-text.has-neon,
+#animated-text.has-neon .char-span,
+#animated-text.has-neon .word-span,
+#animated-text.has-neon .line-container {
+  text-shadow: 
+    0 0 5px var(--neon-color, #ff007f),
+    0 0 10px var(--neon-color, #ff007f),
+    0 0 20px var(--neon-color, #ff007f),
+    0 0 40px var(--neon-color, #ff007f) !important;
+}

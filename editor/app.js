@@ -31,6 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const textScale = document.getElementById('text-scale');
     const textScaleValue = document.getElementById('text-scale-value');
     
+    const colorType = document.getElementById('color-type');
+    const solidColorContainer = document.getElementById('solid-color-container');
+    const gradientColorContainer = document.getElementById('gradient-color-container');
+    const gradientColor1 = document.getElementById('gradient-color-1');
+    const gradientColor2 = document.getElementById('gradient-color-2');
+    const gradientAngle = document.getElementById('gradient-angle');
+    
     const textColor = document.getElementById('text-color');
     const strokeColor = document.getElementById('stroke-color');
     const strokeWidth = document.getElementById('stroke-width');
@@ -43,6 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const shadowDistance = document.getElementById('shadow-distance');
     const shadowOpacity = document.getElementById('shadow-opacity');
     
+    const enableNeon = document.getElementById('enable-neon');
+    const neonControls = document.getElementById('neon-controls');
+    const neonColor = document.getElementById('neon-color');
+    const neonBlur = document.getElementById('neon-blur');
+    
+    const staggerMode = document.getElementById('stagger-mode');
     const animPreset = document.getElementById('anim-preset');
     const animDuration = document.getElementById('anim-duration');
     const animDelay = document.getElementById('anim-delay');
@@ -50,16 +63,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const staggerSpeed = document.getElementById('stagger-speed');
     const staggerValue = document.getElementById('stagger-value');
     
+    const loopPreset = document.getElementById('loop-preset');
+    const loopControls = document.getElementById('loop-controls');
+    const loopCycleDuration = document.getElementById('loop-cycle-duration');
+    const loopIntensity = document.getElementById('loop-intensity');
+    const holdDuration = document.getElementById('hold-duration');
+    
+    const outroPreset = document.getElementById('outro-preset');
+    const outroControls = document.getElementById('outro-controls');
+    const outroDuration = document.getElementById('outro-duration');
+    const outroEase = document.getElementById('outro-ease');
+    
     const bgType = document.getElementById('bg-type');
     const customBgContainer = document.getElementById('custom-bg-color-container');
     const customBgColor = document.getElementById('custom-bg-color');
     const canvasResolution = document.getElementById('canvas-resolution');
     
     const btnPlay = document.getElementById('btn-play');
+    const btnPause = document.getElementById('btn-pause');
     const btnRecord = document.getElementById('btn-record');
     const btnFullscreen = document.getElementById('btn-fullscreen');
     const btnSafeZones = document.getElementById('btn-safe-zones');
     const btnThemeToggle = document.getElementById('btn-theme-toggle');
+    
+    const presetSelect = document.getElementById('preset-select');
+    const btnSavePreset = document.getElementById('btn-save-preset');
+    const btnDeletePreset = document.getElementById('btn-delete-preset');
     
     const viewport = document.getElementById('viewport');
     const animationContainer = document.getElementById('animation-container');
@@ -72,9 +101,107 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // App State
     let currentTimeline = null;
+    let isPausedByUser = false;
     let visualScale = 1;
     const recorder = new AnimationRecorder(animationContainer, animatedText);
     const loadedFonts = new Set(['Outfit']);
+
+    // Default Presets Data
+    const DEFAULT_PRESETS = {
+        "Neón Synthwave": {
+            "text-type": "static",
+            "input-text": "SYNTHWAVE",
+            "font-family": "Bebas Neue",
+            "font-size": "120",
+            "font-weight": "800",
+            "text-scale": "1.2",
+            "color-type": "gradient",
+            "gradient-color-1": "#ff007f",
+            "gradient-color-2": "#00ffff",
+            "gradient-angle": "45",
+            "stroke-color": "#000000",
+            "stroke-width": "3",
+            "enable-shadow": "false",
+            "enable-neon": "true",
+            "neon-color": "#ff007f",
+            "neon-blur": "30",
+            "stagger-mode": "char",
+            "stagger-speed": "0.08",
+            "anim-preset": "blur-reveal",
+            "anim-duration": "1.2",
+            "anim-delay": "0.2",
+            "anim-ease": "power4.out",
+            "loop-preset": "float",
+            "loop-cycle-duration": "2.0",
+            "loop-intensity": "1.5",
+            "hold-duration": "4",
+            "outro-preset": "fade",
+            "outro-duration": "0.8",
+            "outro-ease": "power2.in"
+        },
+        "Gamer Impacto": {
+            "text-type": "static",
+            "input-text": "VICTORIA!",
+            "font-family": "Lilita One",
+            "font-size": "130",
+            "font-weight": "800",
+            "text-scale": "1.3",
+            "color-type": "solid",
+            "text-color": "#ffea00",
+            "stroke-color": "#000000",
+            "stroke-width": "6",
+            "enable-shadow": "true",
+            "shadow-color": "#000000",
+            "shadow-blur": "0",
+            "shadow-angle": "90",
+            "shadow-distance": "12",
+            "shadow-opacity": "80",
+            "enable-neon": "false",
+            "stagger-mode": "char",
+            "stagger-speed": "0.04",
+            "anim-preset": "elastic-bounce",
+            "anim-duration": "1.8",
+            "anim-delay": "0.1",
+            "anim-ease": "back.out(1.7)",
+            "loop-preset": "pulse",
+            "loop-cycle-duration": "1.0",
+            "loop-intensity": "1.2",
+            "hold-duration": "3",
+            "outro-preset": "slide-down",
+            "outro-duration": "0.6",
+            "outro-ease": "power2.in"
+        },
+        "Minimalista Elegante": {
+            "text-type": "static",
+            "input-text": "El Arte del Minimalismo",
+            "font-family": "Playfair Display",
+            "font-size": "70",
+            "font-weight": "400",
+            "text-scale": "1.0",
+            "color-type": "solid",
+            "text-color": "#ffffff",
+            "stroke-color": "#000000",
+            "stroke-width": "0",
+            "enable-shadow": "true",
+            "shadow-color": "#000000",
+            "shadow-blur": "15",
+            "shadow-angle": "45",
+            "shadow-distance": "3",
+            "shadow-opacity": "30",
+            "enable-neon": "false",
+            "stagger-mode": "word",
+            "stagger-speed": "0.15",
+            "anim-preset": "fade",
+            "anim-duration": "2.0",
+            "anim-delay": "0.5",
+            "anim-ease": "power2.out",
+            "loop-preset": "none",
+            "hold-duration": "5",
+            "outro-preset": "fade",
+            "outro-duration": "1.2",
+            "outro-ease": "none"
+        }
+    };
 
     // ==========================================================================
     // UI LAYOUT & CANVAS SCALING
@@ -223,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // STYLING & ANIMATION APPLICATION
     // ==========================================================================
 
-    function applyStylesAndPlay() {
+    function applyStylesAndPlay(shouldPlay = false) {
         // 1. Gather Font Family
         let selectedFont = fontFamily.value;
         if (selectedFont === 'custom') {
@@ -236,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
         animatedText.style.fontWeight = fontWeight.value;
         animatedText.style.color = textColor.value;
         
-        // Apply text scale factor to wrapper element (so GSAP char-span math remains unaffected)
+        // Apply text scale factor to wrapper element
         const scaleVal = parseFloat(textScale.value) || 1;
         const textWrapper = document.getElementById('animated-text-wrapper');
         if (textWrapper) {
@@ -246,11 +373,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // Stroke
         const strokeW = parseFloat(strokeWidth.value) || 0;
         if (strokeW > 0) {
-            // Since we paint stroke first, then fill (using paint-order: stroke fill),
-            // the fill covers the inner half of the stroke. We double the width to keep the same visual thickness.
             animatedText.style.webkitTextStroke = `${strokeW * 2}px ${strokeColor.value}`;
         } else {
             animatedText.style.webkitTextStroke = 'unset';
+        }
+        
+        // Solid vs Gradient Color Type CSS Custom Properties
+        const colorTypeVal = colorType.value;
+        if (colorTypeVal === 'gradient') {
+            animatedText.classList.add('has-gradient');
+            animatedText.style.setProperty('--gradient-angle-deg', `${gradientAngle.value}deg`);
+            animatedText.style.setProperty('--gradient-color-1', gradientColor1.value);
+            animatedText.style.setProperty('--gradient-color-2', gradientColor2.value);
+            animatedText.style.setProperty('--color-type', 'gradient');
+        } else {
+            animatedText.classList.remove('has-gradient');
+            animatedText.style.setProperty('--color-type', 'solid');
         }
         
         // Shadow (Advanced controls)
@@ -268,6 +406,18 @@ document.addEventListener('DOMContentLoaded', () => {
             animatedText.style.textShadow = 'none';
         }
 
+        // Neon Glow CSS Custom Properties
+        const enableNeonVal = enableNeon.checked;
+        if (enableNeonVal) {
+            animatedText.classList.add('has-neon');
+            animatedText.style.setProperty('--neon-color', neonColor.value);
+            animatedText.style.setProperty('--neon-blur', `${neonBlur.value}px`);
+            animatedText.style.setProperty('--enable-neon', 'true');
+        } else {
+            animatedText.classList.remove('has-neon');
+            animatedText.style.setProperty('--enable-neon', 'false');
+        }
+
         // 3. Compile Animation Config
         const isCounter = textType.value === 'counter';
         const textCaseVal = textCase.value;
@@ -275,11 +425,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const config = {
             textType: textType.value,
             text: isCounter ? "" : formatTextCase(inputText.value, textCaseVal),
+            staggerMode: staggerMode.value,
             preset: animPreset.value,
             duration: parseFloat(animDuration.value) || 1.5,
             delay: parseFloat(animDelay.value) || 0.2,
             ease: animEase.value,
             stagger: parseFloat(staggerSpeed.value) || 0.05,
+            loopPreset: loopPreset.value,
+            loopCycleDuration: parseFloat(loopCycleDuration.value) || 1.5,
+            loopIntensity: parseFloat(loopIntensity.value) || 1.0,
+            holdDuration: parseFloat(holdDuration.value) || 3.0,
+            outroPreset: outroPreset.value,
+            outroDuration: parseFloat(outroDuration.value) || 1.0,
+            outroEase: outroEase.value,
             counterConfig: {
                 start: parseInt(counterStart.value) ?? 1,
                 end: parseInt(counterEnd.value) ?? 6,
@@ -300,19 +458,28 @@ document.addEventListener('DOMContentLoaded', () => {
             durationBadge.textContent = `Duración: ${totalDuration.toFixed(1)}s (Exportación: ${exportDuration.toFixed(1)}s)`;
         }
 
+        // Handle play vs static preview (pause at end of intro for editing)
+        if (!shouldPlay) {
+            const introEndTime = (parseFloat(animDelay.value) || 0.2) + (parseFloat(animDuration.value) || 1.5);
+            currentTimeline.seek(introEndTime).pause();
+            isPausedByUser = false;
+        } else {
+            currentTimeline.play(0);
+            isPausedByUser = false;
+        }
     }
 
     // Helper to start styles & font load sequence
-    function triggerUpdate() {
+    function triggerUpdate(shouldPlay = false) {
         let selectedFont = fontFamily.value;
         if (selectedFont === 'custom') {
             const name = customFontName.value.trim();
             if (name) {
-                loadGoogleFont(name, applyStylesAndPlay);
+                loadGoogleFont(name, () => applyStylesAndPlay(shouldPlay));
                 return;
             }
         }
-        applyStylesAndPlay();
+        applyStylesAndPlay(shouldPlay);
     }
 
     // ==========================================================================
@@ -423,6 +590,14 @@ document.addEventListener('DOMContentLoaded', () => {
         animationContainer.style.backgroundColor = customBgColor.value;
     });
 
+    // Color Type change event
+    colorType.addEventListener('change', () => {
+        const val = colorType.value;
+        solidColorContainer.classList.toggle('hidden', val === 'gradient');
+        gradientColorContainer.classList.toggle('hidden', val !== 'gradient');
+        triggerUpdate();
+    });
+
     // Text scale slider update
     textScale.addEventListener('input', () => {
         textScaleValue.textContent = `${parseFloat(textScale.value).toFixed(1)}x`;
@@ -439,6 +614,24 @@ document.addEventListener('DOMContentLoaded', () => {
         triggerUpdate();
     });
 
+    // Toggle Neon controls
+    enableNeon.addEventListener('change', () => {
+        neonControls.classList.toggle('hidden', !enableNeon.checked);
+        triggerUpdate();
+    });
+
+    // Toggle Loop controls
+    loopPreset.addEventListener('change', () => {
+        loopControls.classList.toggle('hidden', loopPreset.value === 'none');
+        triggerUpdate();
+    });
+
+    // Toggle Outro controls
+    outroPreset.addEventListener('change', () => {
+        outroControls.classList.toggle('hidden', outroPreset.value === 'none');
+        triggerUpdate();
+    });
+
     // Stagger slide text update
     staggerSpeed.addEventListener('input', () => {
         staggerValue.textContent = `${staggerSpeed.value}s`;
@@ -451,12 +644,182 @@ document.addEventListener('DOMContentLoaded', () => {
         triggerUpdate();
     });
 
+    // Preset loading helper
+    function loadPresetData(presetData) {
+        for (const [id, value] of Object.entries(presetData)) {
+            const el = document.getElementById(id);
+            if (!el) continue;
+            
+            if (el.type === 'checkbox') {
+                el.checked = value === 'true';
+            } else {
+                el.value = value;
+            }
+            // Dispatch input and change events to sync UI and sliders
+            el.dispatchEvent(new Event('input'));
+            el.dispatchEvent(new Event('change'));
+        }
+        
+        // Handle custom show/hide UI sections manually based on new settings
+        const isCounter = textType.value === 'counter';
+        staticTextFields.classList.toggle('hidden', isCounter);
+        counterTextFields.classList.toggle('hidden', !isCounter);
+
+        shadowControls.classList.toggle('hidden', !enableShadow.checked);
+        neonControls.classList.toggle('hidden', !enableNeon.checked);
+
+        const colorTypeVal = colorType.value;
+        solidColorContainer.classList.toggle('hidden', colorTypeVal === 'gradient');
+        gradientColorContainer.classList.toggle('hidden', colorTypeVal !== 'gradient');
+
+        loopControls.classList.toggle('hidden', loopPreset.value === 'none');
+        outroControls.classList.toggle('hidden', outroPreset.value === 'none');
+        
+        triggerUpdate();
+    }
+
+    // Presets Management
+    const PRESETS_STORAGE_KEY = 'chroma_studio_presets';
+    let customPresets = {};
+
+    function initPresets() {
+        try {
+            const stored = localStorage.getItem(PRESETS_STORAGE_KEY);
+            if (stored) {
+                customPresets = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.error('Error loading presets from localStorage:', e);
+        }
+        renderPresetSelect();
+    }
+
+    function renderPresetSelect() {
+        presetSelect.innerHTML = '<option value="">-- Selecciona un Preset --</option>';
+        
+        const factoryGroup = document.createElement('optgroup');
+        factoryGroup.label = 'Predeterminados de Fábrica';
+        for (const name of Object.keys(DEFAULT_PRESETS)) {
+            const opt = document.createElement('option');
+            opt.value = 'factory:' + name;
+            opt.textContent = name;
+            factoryGroup.appendChild(opt);
+        }
+        presetSelect.appendChild(factoryGroup);
+        
+        if (Object.keys(customPresets).length > 0) {
+            const userGroup = document.createElement('optgroup');
+            userGroup.label = 'Mis Presets';
+            for (const name of Object.keys(customPresets)) {
+                const opt = document.createElement('option');
+                opt.value = 'user:' + name;
+                opt.textContent = name;
+                userGroup.appendChild(opt);
+            }
+            presetSelect.appendChild(userGroup);
+        }
+    }
+
+    presetSelect.addEventListener('change', () => {
+        const val = presetSelect.value;
+        if (!val) return;
+        
+        let presetData = null;
+        if (val.startsWith('factory:')) {
+            const name = val.substring(8);
+            presetData = DEFAULT_PRESETS[name];
+        } else if (val.startsWith('user:')) {
+            const name = val.substring(5);
+            presetData = customPresets[name];
+        }
+        
+        if (presetData) {
+            loadPresetData(presetData);
+        }
+    });
+
+    btnSavePreset.addEventListener('click', () => {
+        const name = prompt('Escribe el nombre de tu nuevo preset:');
+        if (!name) return;
+        
+        const cleanName = name.trim();
+        if (!cleanName) return;
+        
+        const presetData = {};
+        const elementsToSave = [
+            'text-type', 'input-text', 'counter-start', 'counter-end', 
+            'counter-prefix', 'counter-suffix', 'counter-pop-effect',
+            'font-family', 'custom-font-name', 'text-case', 'font-size', 
+            'font-weight', 'text-scale', 'color-type', 'text-color', 
+            'stroke-color', 'stroke-width', 'gradient-color-1', 
+            'gradient-color-2', 'gradient-angle', 'enable-shadow', 
+            'shadow-color', 'shadow-blur', 'shadow-angle', 'shadow-distance', 
+            'shadow-opacity', 'enable-neon', 'neon-color', 'neon-blur',
+            'stagger-mode', 'stagger-speed', 'anim-preset', 'anim-duration', 
+            'anim-delay', 'anim-ease', 'loop-preset', 'loop-cycle-duration', 
+            'loop-intensity', 'hold-duration', 'outro-preset', 
+            'outro-duration', 'outro-ease', 'bg-type', 'custom-bg-color', 
+            'canvas-resolution'
+        ];
+        
+        elementsToSave.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                if (el.type === 'checkbox') {
+                    presetData[id] = el.checked ? 'true' : 'false';
+                } else {
+                    presetData[id] = el.value;
+                }
+            }
+        });
+        
+        customPresets[cleanName] = presetData;
+        
+        try {
+            localStorage.setItem(PRESETS_STORAGE_KEY, JSON.stringify(customPresets));
+            alert(`Preset "${cleanName}" guardado correctamente.`);
+            renderPresetSelect();
+            presetSelect.value = 'user:' + cleanName;
+        } catch (e) {
+            alert('Error al guardar el preset: LocalStorage lleno o deshabilitado.');
+        }
+    });
+
+    btnDeletePreset.addEventListener('click', () => {
+        const val = presetSelect.value;
+        if (!val) {
+            alert('Por favor selecciona un preset de la lista para eliminarlo.');
+            return;
+        }
+        
+        if (val.startsWith('factory:')) {
+            alert('No se pueden eliminar los presets predeterminados de fábrica.');
+            return;
+        }
+        
+        const name = val.substring(5);
+        if (confirm(`¿Estás seguro de que deseas eliminar el preset "${name}"?`)) {
+            delete customPresets[name];
+            try {
+                localStorage.setItem(PRESETS_STORAGE_KEY, JSON.stringify(customPresets));
+                alert(`Preset "${name}" eliminado.`);
+                renderPresetSelect();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    });
+
     // Inline triggers for styled elements (to react instantly to sliders/pickers)
     const instantControls = [
         inputText, counterStart, counterEnd, counterPrefix, counterSuffix, 
         counterPopEffect, fontSize, fontWeight, textColor, strokeColor, 
         strokeWidth, shadowColor, shadowBlur, shadowAngle, shadowDistance,
-        shadowOpacity, textCase, animPreset, animDuration, animDelay, animEase
+        shadowOpacity, textCase, animPreset, animDuration, animDelay, animEase,
+        colorType, gradientColor1, gradientColor2, gradientAngle,
+        enableNeon, neonColor, neonBlur, staggerMode, staggerSpeed,
+        loopPreset, loopCycleDuration, loopIntensity, holdDuration,
+        outroPreset, outroDuration, outroEase
     ];
     
     instantControls.forEach(control => {
@@ -468,8 +831,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Action Buttons
     btnPlay.addEventListener('click', () => {
-        triggerUpdate();
+        if (currentTimeline && currentTimeline.paused() && currentTimeline.progress() < 1 && isPausedByUser) {
+            currentTimeline.play();
+            isPausedByUser = false;
+        } else {
+            triggerUpdate(true);
+        }
     });
+
+    if (btnPause) {
+        btnPause.addEventListener('click', () => {
+            if (currentTimeline) {
+                currentTimeline.pause();
+                isPausedByUser = true;
+            }
+        });
+    }
 
     btnSafeZones.addEventListener('click', () => {
         safeZones.classList.toggle('hidden');
@@ -528,6 +905,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Disable UI buttons
         btnPlay.disabled = true;
+        if (btnPause) btnPause.disabled = true;
         btnRecord.disabled = true;
         recordingOverlay.classList.remove('hidden');
         recordingProgress.style.width = '0%';
@@ -571,6 +949,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     setTimeout(() => {
                         recordingOverlay.classList.add('hidden');
                         btnPlay.disabled = false;
+                        if (btnPause) btnPause.disabled = false;
                         btnRecord.disabled = false;
                     }, 1000);
                 }
@@ -607,10 +986,17 @@ document.addEventListener('DOMContentLoaded', () => {
     linkSliderAndNumber('shadow-angle-slider', 'shadow-angle');
     linkSliderAndNumber('shadow-distance-slider', 'shadow-distance');
     linkSliderAndNumber('shadow-opacity-slider', 'shadow-opacity');
+    linkSliderAndNumber('gradient-angle-slider', 'gradient-angle');
+    linkSliderAndNumber('neon-blur-slider', 'neon-blur');
+    linkSliderAndNumber('hold-duration-slider', 'hold-duration');
     linkSliderAndNumber('anim-duration-slider', 'anim-duration');
     linkSliderAndNumber('anim-delay-slider', 'anim-delay');
 
     // Initial load trigger
     scaleCanvas();
-    setTimeout(() => triggerUpdate(), 300);
+    initPresets();
+    setTimeout(() => {
+        // Load default preset on startup
+        loadPresetData(DEFAULT_PRESETS["Neón Synthwave"]);
+    }, 300);
 });
